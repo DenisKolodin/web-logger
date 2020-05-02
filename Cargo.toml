@@ -29,5 +29,6 @@ features = ["console"]
 wasm-bindgen = { version = "0.2" }
 
 [features]
+default = ["std_web"]
 std_web = ["stdweb"]
 web_sys = ["web-sys"]
