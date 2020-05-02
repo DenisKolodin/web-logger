@@ -22,9 +22,7 @@ web_logger = "0.2"
 After it's initialized, you can use the `log` macros to do actual logging.
 
 ```rust
-#[macro_use]
-extern crate log;
-extern crate web_logger;
+use log::info;
 
 fn main() {
     web_logger::init();
