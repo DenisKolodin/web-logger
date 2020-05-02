@@ -1,52 +1,32 @@
 //! A logger that prints all messages in browser's console.
 
 extern crate log;
-#[macro_use]
-extern crate stdweb;
 
-use log::{
-    Log,
-    Level,
-    Metadata,
-    Record,
-    SetLoggerError,
-};
+use log::{Level, Log, Metadata, Record, SetLoggerError};
 
-mod console {
-    pub(super) fn trace(message: &str) {
-        js! { @(no_return) console.log(@{message}); }
-    }
-
-    pub(super) fn debug(message: &str) {
-        js! { @(no_return) console.debug(@{message}); }
-    }
-
-    pub(super) fn info(message: &str) {
-        js! { @(no_return) console.info(@{message}); }
-    }
-
-    pub(super) fn warn(message: &str) {
-        js! { @(no_return) console.warn(@{message}); }
-    }
-
-    pub(super) fn error(message: &str) {
-        js! { @(no_return) console.error(@{message}); }
+cfg_if::cfg_if! {
+    if #[cfg(feature = "std_web")] {
+        #[macro_use]
+        extern crate stdweb;
+        mod std_web;
+        use std_web::console;
+    } else if #[cfg(feature = "web_sys")] {
+        mod web_sys;
+        use crate::web_sys::console;
     }
 }
 
-
 pub struct Config {
-    pub level: Level
+    pub level: Level,
 }
 
 impl Default for Config {
     fn default() -> Self {
         Config {
-            level: Level::Trace
+            level: Level::Trace,
         }
     }
 }
-
 
 static LOGGER: WebLogger = WebLogger;
 
@@ -61,10 +41,12 @@ impl Log for WebLogger {
     fn log(&self, record: &Record) {
         let metadata = record.metadata();
         if self.enabled(metadata) {
-            let msg = format!("{}:{} -- {}",
+            let msg = format!(
+                "{}:{} -- {}",
                 record.level(),
                 record.target(),
-                record.args());
+                record.args()
+            );
             match metadata.level() {
                 Level::Trace => console::trace(&msg),
                 Level::Debug => console::debug(&msg),
@@ -75,8 +57,7 @@ impl Log for WebLogger {
         }
     }
 
-    fn flush(&self) {
-    }
+    fn flush(&self) {}
 }
 
 pub fn try_init(config: Config) -> Result<(), SetLoggerError> {
@@ -87,9 +68,11 @@ pub fn try_init(config: Config) -> Result<(), SetLoggerError> {
 }
 
 pub fn init() {
-    try_init(Config::default()).expect("web_logger::init should not be called after logger initialized");
+    try_init(Config::default())
+        .expect("web_logger::init should not be called after logger initialized");
 }
 
 pub fn custom_init(config: Config) {
-    try_init(config).expect("web_logger::custom_init should not be called after logger initialized");
+    try_init(config)
+        .expect("web_logger::custom_init should not be called after logger initialized");
 }
