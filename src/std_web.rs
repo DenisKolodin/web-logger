@@ -1,4 +1,6 @@
-pub mod console {
+pub(super) mod console {
+    use stdweb::js;
+
     pub fn trace(message: &str) {
         js! { @(no_return) console.log(@{message}); }
     }

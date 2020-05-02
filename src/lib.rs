@@ -1,13 +1,15 @@
 //! A logger that prints all messages in browser's console.
-
-extern crate log;
+//!
+//! By default, `web_logger` will use the `std_web` feature, which depends on `stdweb`. If you want to use `web-sys`,
+//! add this to your Cargo.toml under `[dependencies]`:
+//! ```toml
+//! web_logger = { version="0.2", default-features=false, features="web_sys" }
+//! ```
 
 use log::{Level, Log, Metadata, Record, SetLoggerError};
 
 cfg_if::cfg_if! {
     if #[cfg(feature = "std_web")] {
-        #[macro_use]
-        extern crate stdweb;
         mod std_web;
         use std_web::console;
     } else if #[cfg(feature = "web_sys")] {

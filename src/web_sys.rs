@@ -1,4 +1,4 @@
-pub mod console {
+pub(super) mod console {
     use web_sys::console;
 
     pub fn trace(message: &str) {
